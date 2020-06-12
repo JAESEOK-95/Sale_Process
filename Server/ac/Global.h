@@ -27,7 +27,9 @@
 #define AUCTION_BID_MONEY_ERROR_MSG "최근 베팅 가격보다 낮은 금액을 베팅하셨습니다.\n"
 #define USER_EXIT_INFO_MSG "최고가격을 배팅했던 유저가 포기했습니다. 이전가격부터 시작합니다.\n"
 
+void err_quit(char* msg);
 
+void err_display(char* msg);
 
 enum STATE
 {
@@ -109,6 +111,33 @@ enum
 	AUCTION_BID_MONEY_ERROR,
 	AUCTION_SHORT_OF_MONEY_ERROR
 };
+void err_quit(char* msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
+	LocalFree(lpMsgBuf);
+	exit(-1);
+}
+
+// 소켓 함수 오류 출력
+void err_display(char* msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	printf("[%s] %s", msg, (LPCTSTR)lpMsgBuf);
+	LocalFree(lpMsgBuf);
+}
 
 struct _User_Info
 {

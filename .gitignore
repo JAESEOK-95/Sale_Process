@@ -4,3 +4,4 @@
 *.db-shm
 *.db-wal
 *.ipch
+/Server/ac/Debug
