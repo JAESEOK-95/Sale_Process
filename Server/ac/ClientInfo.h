@@ -2,6 +2,32 @@
 #include "Global.h"
 #include "AuctionInfo.h"
 
+class _ClientInfo
+{
+private:
+	SOCKET							sock;
+	SOCKADDR_IN					addr;
+	_User_Info*						userinfo;
+	_User_Info*						temp_user;
+	STATE								pre_state;
+	STATE								state;
+	bool								loginstate;
+	int									recvbytes;
+	int									comp_recvbytes;
+	bool								r_sizeflag;
+
+	int									sendbytes;
+	int									comp_sendbytes;
+
+	char								recv_buf[BUFSIZE];
+	char								send_buf[BUFSIZE];
+public:
+
+	_ClientInfo();
+	~_ClientInfo();
+
+};
+
 struct _ClientInfo
 {
 	struct _Try_AuctionInfo
@@ -11,29 +37,12 @@ struct _ClientInfo
 		int          result;
 	};
 
-	SOCKET							sock;
-	SOCKADDR_IN						addr;
-	_User_Info*						userinfo;
-	_User_Info*						temp_user;
-	STATE							pre_state;
-	STATE							state;
-	bool							loginstate;
+
 
 	_Try_AuctionInfo*				try_auction;
 
-	int								recvbytes;
-	int								comp_recvbytes;
-	bool							r_sizeflag;
 
-	int								sendbytes;
-	int								comp_sendbytes;
 
-	char							recv_buf[BUFSIZE];
-	char							send_buf[BUFSIZE];
-
-	_ClientInfo();
-	
-	~_ClientInfo();
 	
 
 	void login(_User_Info* _info);
