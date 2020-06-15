@@ -49,12 +49,16 @@ public:
 	bool check_send_complete();
 	bool is_disconnected();
 	SOCKET GetSock();
+	char* Getbuf(char);		//sendbuf,recvbuf set Get fuc.		s = send, r = recv
 	SOCKADDR_IN GetAddr();
 	STATE GetState(char);		//pre,nomal flag  p = pre_state, n = state
+	int Getbytes(char);
+
 
 
 	void SetState(char,STATE);		//pre,nomal flag  p = pre_state, n = state
-
+	void Setbytes(char, int);			//sendbuf,recvbuf set Get fuc.		s = send, r = recv
+	void SetCompbytes(char, int);	//sendbuf,recvbuf set Get fuc.		s = send, r = recv	
 	//paket,.unpaket
 	void GetProtocol(char* _ptr, PROTOCOL& _protocol);
 	void PackPacket(char* _buf, PROTOCOL _protocol, int& _size);
