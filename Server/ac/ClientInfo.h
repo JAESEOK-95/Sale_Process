@@ -53,7 +53,7 @@ public:
 	SOCKADDR_IN GetAddr();
 	STATE GetState(char);		//pre,nomal flag  p = pre_state, n = state
 	int Getbytes(char);
-
+	int GetCompbytes(char); //sendbuf,recvbuf set Get fuc.		s = send, r = recv	
 
 
 	void SetState(char,STATE);		//pre,nomal flag  p = pre_state, n = state

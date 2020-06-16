@@ -66,10 +66,46 @@ STATE _ClientInfo::GetState(char _flag)
 		return state;
 		break;
 	}
-
-
+}
+int _ClientInfo::Getbytes(char _flag)
+{
+	switch (_flag)
+	{
+	case 's':
+		return sendbytes;
+		break;
+	case 'r':
+		return recvbytes;
+		break;
+	}
 }
 
+int _ClientInfo::GetCompbytes(char _flag)
+{
+	switch (_flag)
+	{
+	case 's':
+		return comp_sendbytes;
+		break;
+	case 'r':
+		return comp_recvbytes;
+		break;
+	}
+}
+
+
+char* _ClientInfo::Getbuf(char _flag)
+{
+	switch (_flag)
+	{
+	case 'r':
+		return recv_buf;
+		break;
+	case 's':
+		return send_buf;
+		break;
+	}
+}
 void _ClientInfo::SetState(char _flag,STATE _state)
 {
 	switch (_flag)
@@ -83,6 +119,32 @@ void _ClientInfo::SetState(char _flag,STATE _state)
 		break;
 	}
 
+}
+
+void _ClientInfo::Setbytes(char _flag,int _num)
+{
+	switch (_flag)
+	{
+	case 's':
+		sendbytes = _num;
+		break;
+	case 'r':
+		recvbytes = _num;
+		break;
+	}
+}
+
+void _ClientInfo::SetCompbytes(char _flag, int _num)
+{
+	switch (_flag)
+	{
+	case 's':
+		comp_sendbytes = _num;
+		break;
+	case 'r':
+		comp_recvbytes = _num;
+		break;
+	}
 }
 void _ClientInfo::login(_User_Info* _info)
 {
