@@ -116,6 +116,14 @@ _User_Info* _ClientInfo::GetUserInfo()
 {
 	return userinfo;
 }
+_User_Info* _ClientInfo::GetTempUserInfo()
+{
+	return temp_user;
+}
+_Try_AuctionInfo* _ClientInfo::GetTryInfo()
+{
+	return try_auction;
+}
 void _ClientInfo::SetState(char _flag,STATE _state)
 {
 	switch (_flag)
@@ -346,29 +354,29 @@ void _ClientInfo::PackPacket(char* _buf, PROTOCOL _protocol, CLinkedList<_Auctio
 			break;
 		}
 
-		if (info->auction_state == AUCTION_COMPLETE)
+		if (info->GetState() == AUCTION_COMPLETE)
 		{
 			count--;
 			continue;
 		}
 
-		memcpy(ptr, &info->auction_product_code, sizeof(info->auction_product_code));
-		ptr = ptr + sizeof(info->auction_product_code);
-		_size = _size + sizeof(info->auction_product_code);
+		memcpy(ptr, (void*)info->GetProductCode(), sizeof(info->GetProductCode()));
+		ptr = ptr + sizeof(info->GetProductCode());
+		_size = _size + sizeof(info->GetProductCode());
 
 
-		int namesize = strlen(info->auction_product);
+		int namesize = strlen(info->GetProductname());
 		memcpy(ptr, &namesize, sizeof(namesize));
 		ptr = ptr + sizeof(namesize);
 		_size = _size + sizeof(namesize);
 
-		memcpy(ptr, info->auction_product, namesize);
+		memcpy(ptr, info->GetProductname(), namesize);
 		ptr = ptr + namesize;
 		_size = _size + namesize;
 
-		memcpy(ptr, &info->auction_price, sizeof(info->auction_price));
-		ptr = ptr + sizeof(info->auction_price);
-		_size = _size + sizeof(info->auction_price);
+		memcpy(ptr, (void*)info->GetProductPrice(), sizeof(info->GetProductPrice()));
+		ptr = ptr + sizeof(info->GetProductPrice());
+		_size = _size + sizeof(info->GetProductPrice());
 	}
 
 	_list->SearchEnd();
@@ -484,9 +492,13 @@ void  _ClientInfo::UnPackPacket(char* _buf, _AuctionInfo& _info)
 	memcpy(&strsize, ptr, sizeof(strsize));
 	ptr = ptr + sizeof(strsize);
 
-	memcpy(_info.auction_product, ptr, strsize);
+	memcpy(_info.GetProductname(), ptr, strsize);
 	ptr = ptr + strsize;
 
-	memcpy(&_info.auction_user_count, ptr, sizeof(_info.auction_user_count));
-	ptr = ptr + sizeof(_info.auction_user_count);
+	int temp = 0;
+
+	memcpy(&temp, ptr, sizeof(int));
+	ptr = ptr + sizeof(int);
+
+	_info.SetProductUserCount(temp);
 }

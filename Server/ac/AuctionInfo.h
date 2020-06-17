@@ -18,12 +18,13 @@ public:
 	_AuctionInfo(const int ,const char*, int,int);
 	~_AuctionInfo();
 
+	void SetProductUserCount(int);
 	char* GetProductname();
 	int GetProductCode();
 	int GetProductPrice();
 	int GetUserCount();
 	int GetState();
-
+	_User_Info* GetMaxUser();
 	void AuctionComplete(_User_Info*, int);
 
 };

@@ -56,7 +56,8 @@ public:
 	int GetCompbytes(char); //sendbuf,recvbuf set Get fuc.		s = send, r = recv	
 	bool GetReSizeflag();		//r_sizeflag Return
 	_User_Info* GetUserInfo();
-
+	_User_Info* GetTempUserInfo();
+	_Try_AuctionInfo* GetTryInfo();				//Pick AuctionInfo Return
 	void SetState(char,STATE);		//pre,nomal flag  p = pre_state, n = state
 	void Setbytes(char, int);			//sendbuf,recvbuf set Get fuc.		s = send, r = recv
 	void SetCompbytes(char, int);	//sendbuf,recvbuf set Get fuc.		s = send, r = recv

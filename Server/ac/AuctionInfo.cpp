@@ -25,6 +25,10 @@ _AuctionInfo::~_AuctionInfo()
 	
 }
 
+void _AuctionInfo::SetProductUserCount(int _num)
+{
+	auction_user_count = _num;
+}
 
 char* _AuctionInfo::GetProductname()
 {
@@ -55,4 +59,9 @@ void _AuctionInfo::AuctionComplete(_User_Info* _info, int _price)
 	max_bid_user = _info;
 	auction_price = _price;
 	auction_state = AUCTION_COMPLETE;
+}
+
+_User_Info* _AuctionInfo::GetMaxUser()
+{
+	return max_bid_user;
 }

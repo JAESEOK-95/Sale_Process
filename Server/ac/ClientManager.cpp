@@ -1,6 +1,6 @@
 #include "ClientManager.h"
 
-
+_ClientManager* _ClientManager::mpts = nullptr;
 _ClientManager* _ClientManager::Create()
 {
 
@@ -18,6 +18,15 @@ void _ClientManager::Destroy()
 		delete mpts;
 		mpts = nullptr;
 	}
+}
+
+CLinkedList<_User_Info*>* _ClientManager::GetJoinList()
+{
+	return Join_List;
+}
+CLinkedList<_ClientInfo*>* _ClientManager::GetUserList()
+{
+	return User_List;
 }
 
 _ClientManager* _ClientManager::GetInstance()

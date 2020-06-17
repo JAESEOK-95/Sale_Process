@@ -1,6 +1,6 @@
 #include "AuctionManager.h"
 
-
+_AuctionManager* _AuctionManager::mpts = nullptr;
 _AuctionManager::_AuctionManager()
 {
 	Auction_List = nullptr;
@@ -123,4 +123,9 @@ bool _AuctionManager::AllAuctionComplete()
 	}
 
 	return true;
+}
+
+CLinkedList<_AuctionInfo*>* _AuctionManager::GetAuctionList()
+{
+	return Auction_List;
 }

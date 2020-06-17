@@ -21,5 +21,6 @@ public:
 	void RemoveAuctionInfo(_AuctionInfo*);
 	_AuctionInfo* SearchAuctionInfo(int);
 	bool AllAuctionComplete();
+	CLinkedList<_AuctionInfo*>* GetAuctionList();
 };
 #endif // !AUCTIONMANAGER_H

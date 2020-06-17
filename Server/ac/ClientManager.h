@@ -20,6 +20,8 @@ public:
 	static _ClientManager* Create();
 	static _ClientManager* GetInstance();
 	static void Destroy();
+	CLinkedList<_User_Info*>* GetJoinList();
+	CLinkedList<_ClientInfo*>* GetUserList();
 	void RemoveClient(_ClientInfo*);
 	_ClientInfo* AddClient(SOCKET, SOCKADDR_IN);
 	int MessageRecv(_ClientInfo*);
