@@ -5,4 +5,9 @@
 *.db-wal
 *.ipch
 /Server/ac/Debug
-Server/.vs/
+*.res
+GUITCPClient/Debug/
+Server/enc_temp_folder/
+Server/.vs/ProjectSettings.json
+Server/.vs/slnx.sqlite
+Server/.vs/VSWorkspaceState.json

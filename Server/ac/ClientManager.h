@@ -16,15 +16,18 @@ private:
 	CLinkedList<_User_Info*>* Join_List;
 
 public:
-	static 	CRITICAL_SECTION cs;
+
 	static _ClientManager* Create();
 	static _ClientManager* GetInstance();
 	static void Destroy();
+	CLinkedList<_User_Info*>* GetJoinList();
+	CLinkedList<_ClientInfo*>* GetUserList();
 	void RemoveClient(_ClientInfo*);
 	_ClientInfo* AddClient(SOCKET, SOCKADDR_IN);
 	int MessageRecv(_ClientInfo*);
 	int MessageSend(_ClientInfo*);
 	int PacketRecv(_ClientInfo*);
+	_ClientInfo* SearchClientInfo(const char*);
 };
 
 #endif // !CLIENTMANAGER_H

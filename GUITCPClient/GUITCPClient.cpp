@@ -269,7 +269,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				continue;
 			}
 		
-			PackPacket(send_buf, JOIN_INFO, UserInfo.id, UserInfo.pw, UserInfo.nickname, size);
+			PackPacket(send_buf, JOIN_INFO, UserInfo.id, UserInfo.pw, UserInfo.nickname,UserInfo.auction_money, size);
 
 			retval = send(sock, send_buf, size, 0);
 			if (retval == SOCKET_ERROR)

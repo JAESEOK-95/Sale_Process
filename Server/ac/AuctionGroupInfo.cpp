@@ -21,7 +21,7 @@ _AuctionGroupInfo::~_AuctionGroupInfo()
 bool _AuctionGroupInfo::userlist_insert(_ClientInfo* _info)
 {
 
-	if (user_list->GetCount() == auction_info->auction_user_count)
+	if (user_list->GetCount() == auction_info->GetUserCount())
 	{
 		return false;
 	}
@@ -39,7 +39,7 @@ bool _AuctionGroupInfo::userlist_delete(_ClientInfo* _info)
 
 bool _AuctionGroupInfo::isfull()
 {
-	if (user_list->GetCount() == auction_info->auction_user_count)
+	if (user_list->GetCount() == auction_info->GetUserCount())
 	{
 		return true;
 	}
@@ -98,6 +98,11 @@ int _AuctionGroupInfo::get_user_count()
 	return user_list->GetCount();
 }
 
+
+_AuctionInfo* _AuctionGroupInfo::GetAuctionInfo()
+{
+	return auction_info;
+}
 bool _AuctionGroupInfo::UpdateMaxBidUser(_ClientInfo* _info)
 {	
 	return bid_user->push(_info);
