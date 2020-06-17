@@ -25,7 +25,7 @@ DWORD CALLBACK MainManager::CountThread(LPVOID ptr)
 		switch (result)
 		{
 		case WAIT_OBJECT_0:
-			LeaveCriticalSection(&cs);
+			 
 			continue;
 		case WAIT_TIMEOUT:
 
@@ -76,7 +76,7 @@ DWORD CALLBACK MainManager::CountThread(LPVOID ptr)
 			_AuctionGroupManager::GetInstance()->GetGroupList()->SearchEnd();
 		}
 
-		LeaveCriticalSection(&cs);
+		 
 
 
 	}
@@ -299,7 +299,7 @@ void MainManager::Run()
 			_ClientInfo* ptr = _ClientManager::GetInstance()->GetUserList()->SearchData();
 			if (ptr == nullptr)
 			{
-				LeaveCriticalSection(&cs);
+				 
 				break;
 			}
 
@@ -325,7 +325,7 @@ void MainManager::Run()
 				break;
 			}
 
-			LeaveCriticalSection(&cs);
+			 
 		}
 
 		_ClientManager::GetInstance()->GetUserList()->SearchEnd();

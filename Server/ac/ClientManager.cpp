@@ -90,7 +90,7 @@ void _ClientManager::RemoveClient(_ClientInfo* _ptr)
 
 	User_List->Delete(_ptr);
 	delete _ptr;
-	LeaveCriticalSection(&cs);
+	 
 }
 
 _ClientInfo* _ClientManager::AddClient(SOCKET _sock, SOCKADDR_IN _clientaddr)
@@ -98,7 +98,7 @@ _ClientInfo* _ClientManager::AddClient(SOCKET _sock, SOCKADDR_IN _clientaddr)
 	 
 	_ClientInfo* ptr = new _ClientInfo(_sock, _clientaddr);
 	User_List->Insert(ptr);
-	LeaveCriticalSection(&cs);
+	 
 	return ptr;
 }
 

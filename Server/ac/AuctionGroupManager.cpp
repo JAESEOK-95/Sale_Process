@@ -93,7 +93,7 @@ _AuctionGroupInfo* _AuctionGroupManager::AddAuctionGroupInfo(_AuctionInfo* _info
 			if (group_info->isfull())
 			{
 				Auction_Group_List->SearchEnd();
-				LeaveCriticalSection(&cs);
+				 
 				return nullptr;
 			}
 			
@@ -110,7 +110,7 @@ _AuctionGroupInfo* _AuctionGroupManager::AddAuctionGroupInfo(_AuctionInfo* _info
 
 		Auction_Group_List->Insert(group_info);
 	}		
-	LeaveCriticalSection(&cs);
+	 
 	return group_info;
 }
 
@@ -137,7 +137,7 @@ void _AuctionGroupManager::RemoveAuctionGroupInfo(_AuctionGroupInfo* _group_info
 	}
 
 	Auction_Group_List->SearchEnd();
-	LeaveCriticalSection(&cs);
+	 
 }
 
 
