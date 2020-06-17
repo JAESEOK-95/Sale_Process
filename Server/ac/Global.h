@@ -30,7 +30,7 @@
 void err_quit(char* msg);
 
 void err_display(char* msg);
-
+static 	CRITICAL_SECTION cs;
 enum STATE
 {
 	INIT_STATE = -1,

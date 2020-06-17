@@ -16,7 +16,7 @@ private:
 	CLinkedList<_User_Info*>* Join_List;
 
 public:
-	static 	CRITICAL_SECTION cs;
+
 	static _ClientManager* Create();
 	static _ClientManager* GetInstance();
 	static void Destroy();
@@ -25,6 +25,7 @@ public:
 	int MessageRecv(_ClientInfo*);
 	int MessageSend(_ClientInfo*);
 	int PacketRecv(_ClientInfo*);
+	_ClientInfo* SearchClientInfo(const char*);
 };
 
 #endif // !CLIENTMANAGER_H

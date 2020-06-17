@@ -54,11 +54,13 @@ public:
 	STATE GetState(char);		//pre,nomal flag  p = pre_state, n = state
 	int Getbytes(char);
 	int GetCompbytes(char); //sendbuf,recvbuf set Get fuc.		s = send, r = recv	
-
+	bool GetReSizeflag();		//r_sizeflag Return
+	_User_Info* GetUserInfo();
 
 	void SetState(char,STATE);		//pre,nomal flag  p = pre_state, n = state
 	void Setbytes(char, int);			//sendbuf,recvbuf set Get fuc.		s = send, r = recv
-	void SetCompbytes(char, int);	//sendbuf,recvbuf set Get fuc.		s = send, r = recv	
+	void SetCompbytes(char, int);	//sendbuf,recvbuf set Get fuc.		s = send, r = recv
+	void SetReSizeflag(bool);			// r_sizeflag
 	//paket,.unpaket
 	void GetProtocol(char* _ptr, PROTOCOL& _protocol);
 	void PackPacket(char* _buf, PROTOCOL _protocol, int& _size);

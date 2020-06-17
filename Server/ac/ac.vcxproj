@@ -88,14 +88,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AuctionGroupInfo.cpp" />
+    <ClCompile Include="AuctionManager.cpp" />
     <ClCompile Include="ClientInfo.cpp" />
+    <ClCompile Include="ClientManager.cpp" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="AuctionInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AuctionGroupInfo.h" />
     <ClInclude Include="AuctionInfo.h" />
+    <ClInclude Include="AuctionManager.h" />
     <ClInclude Include="ClientInfo.h" />
+    <ClInclude Include="ClientManager.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Stack.h" />

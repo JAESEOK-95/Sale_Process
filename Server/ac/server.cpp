@@ -7,13 +7,13 @@
 #include "AuctionGroupInfo.h"
 
 
-SOCKET hDummySock;
+SOCKET hDummySock;		//mainmanager
 HANDLE hEvent;
-CRITICAL_SECTION cs;
+//CRITICAL_SECTION cs;
 
-CLinkedList<_ClientInfo*>* User_List;
-CLinkedList<_User_Info*>* Join_List;
-CLinkedList<_AuctionInfo*>* Auction_List;
+//CLinkedList<_ClientInfo*>* User_List;
+//CLinkedList<_User_Info*>* Join_List;
+//CLinkedList<_AuctionInfo*>* Auction_List;
 CLinkedList<_AuctionGroupInfo*>* Auction_Group_List;
 
 
@@ -116,83 +116,6 @@ bool FileDataSave()
 }
 
 
-
-_AuctionInfo* AddAuctionInfo(const char* _product, int _count, int _price)
-{
-	EnterCriticalSection(&cs);
-	static int auction_user_count = 0;
-	_AuctionInfo* info = new _AuctionInfo;	
-
-	strcpy(info->auction_product, _product);
-	info->auction_user_count = _count;
-	info->auction_price = _price;
-	info->auction_product_code = auction_user_count++;
-	info->auction_state = AUCTION_ONGOING;
-	Auction_List->Insert(info);
-	LeaveCriticalSection(&cs);
-	return info;
-}
-
-void RemoveAuctionInfo(_AuctionInfo* _auctioninfo)
-{	
-	EnterCriticalSection(&cs);
-	Auction_List->Delete(_auctioninfo);
-	delete _auctioninfo;
-	LeaveCriticalSection(&cs);
-}
-
-_ClientInfo* SearchClientInfo(const char* _id)
-{
-	_ClientInfo* info = nullptr;
-
-	User_List->SearchStart();
-
-	while (1)
-	{
-		info = User_List->SearchData();
-		if (info == nullptr)
-		{			
-			break;
-		}
-		if (!strcmp(info->userinfo->id, _id))
-		{			
-			break;
-		}
-	}
-
-	User_List->SearchEnd();
-
-	return info;
-}
-
-_AuctionInfo* SearchAuctionInfo(int _auction_code)
-{
-	_AuctionInfo* auction_info = nullptr;
-	Auction_List->SearchStart();
-
-	while (1)
-	{
-		auction_info = Auction_List->SearchData();
-		if (auction_info == nullptr)
-		{			
-			break;
-		}
-
-		if (auction_info->auction_state == AUCTION_COMPLETE)
-		{
-			continue;
-		}
-
-		if (auction_info->auction_product_code == _auction_code)
-		{			
-			break;
-		}
-	}
-
-	Auction_List->SearchEnd();
-	return auction_info;
-}
-
 _AuctionGroupInfo* SearchAuctionGroupInfo(_AuctionInfo* _auction_info)
 {
 	_AuctionGroupInfo* group_info = nullptr;
@@ -285,26 +208,7 @@ void RemoveAuctionGroupInfo(_AuctionGroupInfo* _group_info)
 	LeaveCriticalSection(&cs);
 }
 
-bool AllAuctionComplete()
-{
-	Auction_List->SearchStart();
-	
-	while (1)
-	{
-		_AuctionInfo* auction_info = Auction_List->SearchData();		
-		if (auction_info == nullptr)
-		{
-			break;
-		}
 
-		if (auction_info->auction_state != AUCTION_COMPLETE)
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
 
 bool CheckAuctionCompleteGroup(_ClientInfo* _info)
 {
@@ -503,8 +407,6 @@ int main(int argc, char **argv)
 	if (listen(hServSock, 5) == SOCKET_ERROR)
 		err_quit("listen() error");
 
-	User_List = new CLinkedList<_ClientInfo*>();
-	Join_List = new CLinkedList<_User_Info*>();
 	Auction_List = new CLinkedList<_AuctionInfo*>();
 	Auction_Group_List = new CLinkedList<_AuctionGroupInfo*>();
 

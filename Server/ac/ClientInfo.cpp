@@ -106,6 +106,16 @@ char* _ClientInfo::Getbuf(char _flag)
 		break;
 	}
 }
+
+bool _ClientInfo::GetReSizeflag()
+{
+	return r_sizeflag;
+}
+
+_User_Info* _ClientInfo::GetUserInfo()
+{
+	return userinfo;
+}
 void _ClientInfo::SetState(char _flag,STATE _state)
 {
 	switch (_flag)
@@ -145,6 +155,11 @@ void _ClientInfo::SetCompbytes(char _flag, int _num)
 		comp_recvbytes = _num;
 		break;
 	}
+}
+
+void _ClientInfo::SetReSizeflag(bool _flag)
+{
+	r_sizeflag = _flag;
 }
 void _ClientInfo::login(_User_Info* _info)
 {

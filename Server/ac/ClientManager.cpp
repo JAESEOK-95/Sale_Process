@@ -11,6 +11,14 @@ _ClientManager* _ClientManager::Create()
 	return mpts;
 }
 
+void _ClientManager::Destroy()
+{
+	if (mpts != nullptr)
+	{
+		delete mpts;
+		mpts = nullptr;
+	}
+}
 
 _ClientManager* _ClientManager::GetInstance()
 {
@@ -20,12 +28,47 @@ _ClientManager* _ClientManager::GetInstance()
 _ClientManager::_ClientManager()
 {
 	User_List = nullptr;
+	Join_List = nullptr;
 
+	User_List = new CLinkedList<_ClientInfo*>();
+	Join_List = new CLinkedList<_User_Info*>();
 
 }
 
 _ClientManager::~_ClientManager()
 {
+	User_List->SearchStart();
+
+	while (1)
+	{
+		_ClientInfo* _info = User_List->SearchData();
+		if (_info != nullptr)
+		{
+			User_List->Delete(_info);
+		}
+		else
+		{
+			User_List->SearchEnd();
+			break;
+		}
+	}
+
+	Join_List->SearchStart();
+
+	while (1)
+	{
+		_User_Info* _u_info = Join_List->SearchData();
+		if (_u_info != nullptr)
+		{
+			Join_List->Delete(_u_info);
+		}
+		else
+		{
+			Join_List->SearchEnd();
+			break;
+		}
+	}
+
 
 }
 
@@ -50,6 +93,29 @@ _ClientInfo* _ClientManager::AddClient(SOCKET _sock, SOCKADDR_IN _clientaddr)
 	return ptr;
 }
 
+_ClientInfo* _ClientManager::SearchClientInfo(const char* _id)
+{
+	_ClientInfo* info = nullptr;
+
+	User_List->SearchStart();
+
+	while (1)
+	{
+		info = User_List->SearchData();
+		if (info == nullptr)
+		{
+			break;
+		}
+		if (!strcmp(info->GetUserInfo()->id, _id))
+		{
+			break;
+		}
+	}
+
+	User_List->SearchEnd();
+
+	return info;
+}
 
 int _ClientManager::MessageRecv(_ClientInfo* _info)
 {
@@ -116,7 +182,7 @@ int _ClientManager::MessageSend(_ClientInfo* _info)
 
 int _ClientManager::PacketRecv(_ClientInfo* _ptr)
 {
-	if (!_ptr->r_sizeflag)
+	if (!_ptr->GetReSizeflag())
 	{
 		//_ptr->recvbytes = sizeof(int);
 		_ptr->Setbytes('r', sizeof(int));
@@ -124,8 +190,9 @@ int _ClientManager::PacketRecv(_ClientInfo* _ptr)
 		switch (retval)
 		{
 		case SOC_TRUE:
-			memcpy(&_ptr->recvbytes, _ptr->recv_buf, sizeof(int));
-			_ptr->r_sizeflag = true;
+			memcpy((void*)_ptr->Getbytes('r'), _ptr->Getbuf('r'), sizeof(int));  //test ÇÊ¿ä
+			//_ptr->r_sizeflag = true;
+			_ptr->SetReSizeflag(true);
 			return SOC_FALSE;
 		case SOC_FALSE:
 			return SOC_FALSE;
@@ -141,7 +208,8 @@ int _ClientManager::PacketRecv(_ClientInfo* _ptr)
 	switch (retval)
 	{
 	case SOC_TRUE:
-		_ptr->r_sizeflag = false;
+		//_ptr->r_sizeflag = false;
+		_ptr->SetReSizeflag(false);
 		return SOC_TRUE;
 	case SOC_FALSE:
 		return SOC_FALSE;
