@@ -333,7 +333,7 @@ void _ClientInfo::PackPacket(char* _buf, PROTOCOL _protocol, CLinkedList<_Auctio
 	char* ptr = _buf;
 	_size = 0;
 	int count = _list->GetCount();
-
+	int Temp = 0;
 	ptr = ptr + sizeof(_size);
 
 	memcpy(ptr, &_protocol, sizeof(_protocol));
@@ -359,8 +359,8 @@ void _ClientInfo::PackPacket(char* _buf, PROTOCOL _protocol, CLinkedList<_Auctio
 			count--;
 			continue;
 		}
-
-		memcpy(ptr, (void*)info->GetProductCode(), sizeof(info->GetProductCode()));
+		Temp = info->GetProductCode();
+		memcpy(ptr,&Temp, sizeof(info->GetProductCode()));
 		ptr = ptr + sizeof(info->GetProductCode());
 		_size = _size + sizeof(info->GetProductCode());
 
@@ -374,7 +374,8 @@ void _ClientInfo::PackPacket(char* _buf, PROTOCOL _protocol, CLinkedList<_Auctio
 		ptr = ptr + namesize;
 		_size = _size + namesize;
 
-		memcpy(ptr, (void*)info->GetProductPrice(), sizeof(info->GetProductPrice()));
+		Temp = info->GetProductPrice();
+		memcpy(ptr, &Temp, sizeof(info->GetProductPrice()));
 		ptr = ptr + sizeof(info->GetProductPrice());
 		_size = _size + sizeof(info->GetProductPrice());
 	}

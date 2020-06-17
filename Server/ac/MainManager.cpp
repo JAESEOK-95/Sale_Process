@@ -20,7 +20,7 @@ DWORD CALLBACK MainManager::CountThread(LPVOID ptr)
 	while (1)
 	{
 		int result = WaitForSingleObject(hEvent, 100);
-		EnterCriticalSection(&cs);
+		 
 
 		switch (result)
 		{
@@ -30,12 +30,12 @@ DWORD CALLBACK MainManager::CountThread(LPVOID ptr)
 		case WAIT_TIMEOUT:
 
 			//Auction_Group_List->SearchStart();
-			Agm_pts->GetInstance()->GetGroupList()->SearchStart();
+			_AuctionGroupManager::GetInstance()->GetGroupList()->SearchStart();
 
 			while (1)
 			{
 
-				_AuctionGroupInfo* group_info = Agm_pts->GetInstance()->GetGroupList()->SearchData();
+				_AuctionGroupInfo* group_info = _AuctionGroupManager::GetInstance()->GetGroupList()->SearchData();
 				if (group_info == nullptr)
 				{
 					break;
@@ -73,7 +73,7 @@ DWORD CALLBACK MainManager::CountThread(LPVOID ptr)
 
 			}
 
-			Agm_pts->GetInstance()->GetGroupList()->SearchEnd();
+			_AuctionGroupManager::GetInstance()->GetGroupList()->SearchEnd();
 		}
 
 		LeaveCriticalSection(&cs);
@@ -121,7 +121,7 @@ bool MainManager::FileDataLoad()
 		}
 		_User_Info* ptr = new _User_Info;
 		memcpy(ptr, &info, sizeof(_User_Info));
-		Cm_pts->GetInstance()->GetJoinList()->Insert(ptr);
+		_ClientManager::GetInstance()->GetJoinList()->Insert(ptr);
 	}
 
 	fclose(fp);
@@ -157,11 +157,11 @@ bool MainManager::FileDataSave()
 	}
 
 	//Join_List->SearchStart();
-	Cm_pts->GetInstance()->GetJoinList()->SearchStart();
+	_ClientManager::GetInstance()->GetJoinList()->SearchStart();
 
 	while (1)
 	{
-		_User_Info* info = Cm_pts->GetInstance()->GetJoinList()->SearchData();
+		_User_Info* info = _ClientManager::GetInstance()->GetJoinList()->SearchData();
 		if (info == nullptr)
 		{
 			break;
@@ -175,7 +175,7 @@ bool MainManager::FileDataSave()
 		}
 	}
 
-	Cm_pts->GetInstance()->GetJoinList()->SearchEnd();
+	_ClientManager::GetInstance()->GetJoinList()->SearchEnd();
 
 	fclose(fp);
 	return true;
@@ -197,13 +197,10 @@ MainManager* MainManager::create()
 	if (Mm_pts == nullptr)
 	{
 		Mm_pts = new MainManager();
-		Cm_pts = nullptr;
-		Am_pts = nullptr;
-		Agm_pts = nullptr;
 	}
-	Cm_pts = _ClientManager::Create();
-	Am_pts = _AuctionManager::Create();
-	Agm_pts = _AuctionGroupManager::Create();
+	 _ClientManager::Create();
+	_AuctionManager::Create();
+	_AuctionGroupManager::Create();
 
 	return Mm_pts;
 }
@@ -217,9 +214,9 @@ void MainManager::Destroy()
 {
 	if (Mm_pts != nullptr)
 	{
-		Cm_pts->Destroy();
-		Am_pts->Destroy();
-		Agm_pts->Destroy();
+		_ClientManager::Destroy();
+		_AuctionManager::Destroy();
+		_AuctionGroupManager::Destroy();
 		delete Mm_pts;
 	}
 
@@ -277,11 +274,11 @@ void MainManager::Run()
 	PROTOCOL protocol;
 	int size;
 
-	Am_pts->GetInstance()->AddAuctionInfo("식탁", 3, 100000);
-	Am_pts->GetInstance()->AddAuctionInfo("침대", 2, 100000);
-	Am_pts->GetInstance()->AddAuctionInfo("장식장", 3, 100000);
-	Am_pts->GetInstance()->AddAuctionInfo("책상", 3, 100000);
-	Am_pts->GetInstance()->AddAuctionInfo("액자", 3, 100000);
+	_AuctionManager::GetInstance()->AddAuctionInfo("식탁", 3, 100000);
+	_AuctionManager::GetInstance()->AddAuctionInfo("침대", 2, 100000);
+	_AuctionManager::GetInstance()->AddAuctionInfo("장식장", 3, 100000);
+	_AuctionManager::GetInstance()->AddAuctionInfo("책상", 3, 100000);
+	_AuctionManager::GetInstance()->AddAuctionInfo("액자", 3, 100000);
 
 	CreateThread(NULL, 0, CountThread, NULL, 0, NULL);
 
@@ -293,13 +290,13 @@ void MainManager::Run()
 		FD_SET(hServSock, &Rset);
 		FD_SET(hDummySock, &Rset);
 
-		Cm_pts->GetInstance()->GetUserList()->SearchStart();
+		_ClientManager::GetInstance()->GetUserList()->SearchStart();
 
 		while (1)
 		{
-			EnterCriticalSection(&cs);
+			 
 
-			_ClientInfo* ptr = Cm_pts->GetInstance()->GetUserList()->SearchData();
+			_ClientInfo* ptr = _ClientManager::GetInstance()->GetUserList()->SearchData();
 			if (ptr == nullptr)
 			{
 				LeaveCriticalSection(&cs);
@@ -331,7 +328,7 @@ void MainManager::Run()
 			LeaveCriticalSection(&cs);
 		}
 
-		Cm_pts->GetInstance()->GetUserList()->SearchEnd();
+		_ClientManager::GetInstance()->GetUserList()->SearchEnd();
 
 		if (select(0, &Rset, &Wset, 0, NULL) == SOCKET_ERROR)
 		{
@@ -343,16 +340,16 @@ void MainManager::Run()
 		{
 			int clntLen = sizeof(clntAddr);
 			hClntSock = accept(hServSock, (SOCKADDR*)&clntAddr, &clntLen);
-			_ClientInfo* ptr = Cm_pts->GetInstance()->AddClient(hClntSock, clntAddr);
+			_ClientInfo* ptr = _ClientManager::GetInstance()->AddClient(hClntSock, clntAddr);
 			ptr->SetState('n', LOGIN_MENU_SELECT_STATE);
 			continue;
 		}
 
-		Cm_pts->GetInstance()->GetUserList()->SearchStart(); //유저 리스트 검색 시작
+		_ClientManager::GetInstance()->GetUserList()->SearchStart(); //유저 리스트 검색 시작
 
 		while (1)
 		{
-			_ClientInfo* ptr = Cm_pts->GetInstance()->GetUserList()->SearchData();		// 1개씩 가ㅕ온다.
+			_ClientInfo* ptr = _ClientManager::GetInstance()->GetUserList()->SearchData();		// 1개씩 가ㅕ온다.
 
 			if (ptr == nullptr)
 			{
@@ -361,7 +358,7 @@ void MainManager::Run()
 
 			if (FD_ISSET(ptr->GetSock(), &Rset))
 			{
-				int result = Cm_pts->GetInstance()->PacketRecv(ptr);
+				int result = _ClientManager::GetInstance()->PacketRecv(ptr);
 
 				switch (result)
 				{
@@ -378,18 +375,18 @@ void MainManager::Run()
 
 				if (ptr->GetState('n') != DISCONNECTED_STATE && protocol == CONNECT_END)
 				{
-					EnterCriticalSection(&cs);
+					 
 					ptr->SetState('p', ptr->GetState('n'));
 					ptr->SetState('n', CONNECT_END_SEND_STATE);
 
-					LeaveCriticalSection(&cs);
+ 
 					continue;
 				}
 
 				switch (ptr->GetState('n'))
 				{
 				case LOGIN_MENU_SELECT_STATE:
-					EnterCriticalSection(&cs);
+					 
 
 					switch (protocol)
 					{
@@ -406,10 +403,10 @@ void MainManager::Run()
 						ptr->SetState('n', LOGIN_RESULT_SEND_STATE);
 						break;
 					}
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case AUCTION_MENU_SELECT_STATE:
-					EnterCriticalSection(&cs);
+					 
 					switch (protocol)
 					{
 
@@ -421,7 +418,7 @@ void MainManager::Run()
 						int code = 0;
 						ptr->UnPackPacket(ptr->Getbuf('r'), code);
 
-						_AuctionInfo* auc_info = Am_pts->GetInstance()->SearchAuctionInfo(code);
+						_AuctionInfo* auc_info = _AuctionManager::GetInstance()->SearchAuctionInfo(code);
 						if (auc_info == nullptr)
 						{
 							ptr->GetTryInfo()->result = AUCTION_CODE_ERROR;
@@ -432,7 +429,7 @@ void MainManager::Run()
 							break;
 						}
 
-						_AuctionGroupInfo* group_info = Agm_pts->GetInstance()->AddAuctionGroupInfo(auc_info);
+						_AuctionGroupInfo* group_info = _AuctionGroupManager::GetInstance()->AddAuctionGroupInfo(auc_info);
 
 						if (group_info == nullptr)
 						{
@@ -462,11 +459,11 @@ void MainManager::Run()
 						ptr->SetState('n', LOGOUT_RESULT_SEND_STATE);
 						break;
 					}
-					LeaveCriticalSection(&cs);
+ 
 					break;
 
 				case AUCTION_BID_STATE:
-					EnterCriticalSection(&cs);
+					 
 					{
 						int price;
 						_AuctionGroupInfo* group_info;
@@ -484,7 +481,7 @@ void MainManager::Run()
 								break;
 							}
 
-							if (!Agm_pts->GetInstance()->TryBid(ptr, price))
+							if (!_AuctionGroupManager::GetInstance()->TryBid(ptr, price))
 							{
 								ptr->GetTryInfo()->result = AUCTION_BID_MONEY_ERROR;
 								ptr->SetState('p', ptr->GetState('n'));
@@ -492,7 +489,7 @@ void MainManager::Run()
 								break;
 							}
 
-							group_info = Agm_pts->GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
+							group_info = _AuctionGroupManager::GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
 							group_info->searchstart();
 
 							while (1)
@@ -516,15 +513,15 @@ void MainManager::Run()
 						}
 
 					}
-					LeaveCriticalSection(&cs);
+ 
 					break;
 
 				case DISCONNECTED_STATE:
-					EnterCriticalSection(&cs);
-					Agm_pts->GetInstance()->ExitAuctionGroup(ptr);
-					Cm_pts->GetInstance()->RemoveClient(ptr);
+					 
+					_AuctionGroupManager::GetInstance()->ExitAuctionGroup(ptr);
+					_ClientManager::GetInstance()->RemoveClient(ptr);
 					Mm_pts->GetInstance()->FileDataSave();
-					LeaveCriticalSection(&cs);
+ 
 					continue;
 				}
 			}
@@ -538,14 +535,14 @@ void MainManager::Run()
 				switch (ptr->GetState('n'))
 				{
 				case JOIN_RESULT_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
-						Cm_pts->GetInstance()->GetJoinList()->SearchStart();
+						_ClientManager::GetInstance()->GetJoinList()->SearchStart();
 
 						while (1)
 						{
-							_User_Info* user_info = Cm_pts->GetInstance()->GetJoinList()->SearchData();
+							_User_Info* user_info = _ClientManager::GetInstance()->GetJoinList()->SearchData();
 							if (user_info == nullptr)
 							{
 								break;
@@ -558,7 +555,7 @@ void MainManager::Run()
 							}
 						}
 
-						Cm_pts->GetInstance()->GetJoinList()->SearchEnd();
+						_ClientManager::GetInstance()->GetJoinList()->SearchEnd();
 
 						if (join_result == NODATA)
 						{
@@ -571,7 +568,7 @@ void MainManager::Run()
 
 							Mm_pts->GetInstance()->FileDataAdd(user);
 
-							Cm_pts->GetInstance()->GetJoinList()->Insert(user);
+							_ClientManager::GetInstance()->GetJoinList()->Insert(user);
 							join_result = JOIN_SUCCESS;
 							strcpy(msg, JOIN_SUCCESS_MSG);
 						}
@@ -582,7 +579,7 @@ void MainManager::Run()
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -591,27 +588,27 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 					ptr->SetState('n', LOGIN_MENU_SELECT_STATE);
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case LOGIN_RESULT_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
-						Cm_pts->GetInstance()->GetJoinList()->SearchStart();
+						_ClientManager::GetInstance()->GetJoinList()->SearchStart();
 						while (1)
 						{
-							_User_Info* user_info = Cm_pts->GetInstance()->GetJoinList()->SearchData();
+							_User_Info* user_info = _ClientManager::GetInstance()->GetJoinList()->SearchData();
 							if (user_info == nullptr)
 							{
 								break;
@@ -633,7 +630,7 @@ void MainManager::Run()
 							}
 						}
 
-						Cm_pts->GetInstance()->GetJoinList()->SearchEnd();
+						_ClientManager::GetInstance()->GetJoinList()->SearchEnd();
 						if (login_result == NODATA)
 						{
 							login_result = ID_ERROR;
@@ -646,7 +643,7 @@ void MainManager::Run()
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -655,7 +652,7 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
@@ -663,7 +660,7 @@ void MainManager::Run()
 
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 
@@ -675,17 +672,17 @@ void MainManager::Run()
 					{
 						ptr->SetState('n', LOGIN_MENU_SELECT_STATE);
 					}
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case USER_INFO_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
 						ptr->PackPacket(ptr->Getbuf('s'), USER_INFO,ptr->GetUserInfo()->auction_money, ptr->GetUserInfo()->nickname, size);
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -694,7 +691,7 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
@@ -702,21 +699,21 @@ void MainManager::Run()
 
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 					ptr->SetState('n', AUCTION_MENU_SELECT_STATE);
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case AUCION_MONEY_UPDATE_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
 						ptr->PackPacket(ptr->Getbuf('s'), AUCTION_MONEY_UPDATE_INFO, ptr->GetUserInfo()->auction_money, size);
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -725,37 +722,37 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 
 					ptr->SetState('n', ptr->GetState('p'));
-					LeaveCriticalSection(&cs);
+ 
 					break;
 
 				case AUCTION_LIST_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
-						if (Am_pts->GetInstance()->AllAuctionComplete())
+						if (_AuctionManager::GetInstance()->AllAuctionComplete())
 						{
 							ptr->PackPacket(ptr->Getbuf('s'), ALL_AUCTION_COMPLETE, AUCTION_ALL_AUCTION_COMPLETE_MSG, size);
 						}
 						else
 						{
-							ptr->PackPacket(ptr->Getbuf('s'), AUCTION_LIST_INFO, Am_pts->GetInstance()->GetAuctionList(), size);
+							ptr->PackPacket(ptr->Getbuf('s'), AUCTION_LIST_INFO, _AuctionManager::GetInstance()->GetAuctionList(), size);
 						}
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -764,29 +761,29 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 					ptr->SetState('n', AUCTION_MENU_SELECT_STATE);
-					LeaveCriticalSection(&cs);
+ 
 					break;
 
 				case AUCTION_BID_WAIT_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
 						ptr->PackPacket(ptr->Getbuf('s'), AUCTION_BID_WAIT, AUCTION_BID_WAIT_MSG, size);
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -795,22 +792,22 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 					ptr->SetState('n', AUCTION_BID_WAIT_STATE);
-					LeaveCriticalSection(&cs);
+ 
 				case AUCTION_BID_WAIT_STATE:
-					EnterCriticalSection(&cs);
+					 
 					{
-						_AuctionGroupInfo* group_info = Agm_pts->GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
+						_AuctionGroupInfo* group_info = _AuctionGroupManager::GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
 						if (group_info->isfull())
 						{
 							group_info->searchstart();
@@ -829,17 +826,17 @@ void MainManager::Run()
 						}
 
 					}
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case AUCTION_BID_START_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
 						ptr->PackPacket(ptr->Getbuf('s'), AUCTION_BID_START, AUCTION_BID_START_MSG, size);
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -848,25 +845,25 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 					ptr->SetState('n', AUCTION_BID_STATE);
-					LeaveCriticalSection(&cs);
+ 
 					break;
 
 				case AUCTION_BID_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
-						_AuctionGroupInfo* group_info = Agm_pts->GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
+						_AuctionGroupInfo* group_info = _AuctionGroupManager::GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
 						memset(msg, 0, sizeof(msg));
 						sprintf(msg, "%s님이 %d원을 입찰하셨습니다.\n", group_info->GetMaxBidUser()->GetUserInfo()->nickname,
 							group_info->GetMaxBidUser()->GetTryInfo()->try_price);
@@ -874,7 +871,7 @@ void MainManager::Run()
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -883,31 +880,31 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 					ptr->SetState('n', ptr->GetState('p'));
-					LeaveCriticalSection(&cs);
+ 
 					break;
 
 				case AUCTION_COUNT_SEND_STATE:  //최고 입찰가가 나오면 카운팅을 시작하여 5초간 타이머를 건다.
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
-						_AuctionGroupInfo* group_info = Agm_pts->GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
+						_AuctionGroupInfo* group_info = _AuctionGroupManager::GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
 						sprintf(msg, "%d초 지났습니다. 5초가 지나면 경매가 종료됩니다.\n", group_info->get_timer_count());
 						ptr->PackPacket(ptr->Getbuf('s'), AUCTION_SECOND_COUNT, msg, size);
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -916,7 +913,7 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
@@ -924,12 +921,12 @@ void MainManager::Run()
 
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 
 					{
-						_AuctionGroupInfo* group_info = Agm_pts->GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
+						_AuctionGroupInfo* group_info = _AuctionGroupManager::GetInstance()->SearchAuctionGroupInfo(ptr->GetTryInfo()->info);
 
 						if (group_info->get_timer_count() >= MAX_AUCTION_COUNT)
 						{
@@ -940,15 +937,15 @@ void MainManager::Run()
 								ptr->GetTryInfo()->info->AuctionComplete(ptr->GetUserInfo(), ptr->GetTryInfo()->try_price);
 							}
 							ptr->SetState('n', AUCTION_COMPLETE_STATE);
-							LeaveCriticalSection(&cs);
+		 
 							break;
 						}
 					}
 					ptr->SetState('n', ptr->GetState('p'));
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case AUCTION_COMPLETE_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
 						if (ptr->check_auction_success())
@@ -968,7 +965,7 @@ void MainManager::Run()
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -977,18 +974,18 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 
-					if (Agm_pts->GetInstance()->CheckAuctionCompleteGroup(ptr))
+					if (_AuctionGroupManager::GetInstance()->CheckAuctionCompleteGroup(ptr))
 					{
 						//
 					}
@@ -1006,10 +1003,10 @@ void MainManager::Run()
 						ptr->SetState('n', AUCTION_MENU_SELECT_STATE);
 					}
 
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case AUCTION_ERROR_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
 						memset(msg, 0, sizeof(msg));
@@ -1033,7 +1030,7 @@ void MainManager::Run()
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -1042,29 +1039,29 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 
 					ptr->SetState('n', ptr->GetState('p'));
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case CONNECT_END_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
 						ptr->PackPacket(ptr->Getbuf('s'), CONNECT_END, size);
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -1073,28 +1070,28 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 					ptr->SetState('n', ptr->GetState('p'));
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case USER_EXIT_INFO_SEND_STAE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
 						ptr->PackPacket(ptr->Getbuf('s'), USER_EXIT_INFO, USER_EXIT_INFO_MSG, size);
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -1103,28 +1100,28 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
 					ptr->SetState('n', ptr->GetState('p'));
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				case LOGOUT_RESULT_SEND_STATE:
-					EnterCriticalSection(&cs);
+					 
 					if (ptr->check_send_complete())
 					{
 						ptr->PackPacket(ptr->Getbuf('s'), LOGOUT_RESULT, LOGOUT_MSG, size);
 						ptr->Setbytes('s', size);
 					}
 
-					result = Cm_pts->GetInstance()->MessageSend(ptr);
+					result = _ClientManager::GetInstance()->MessageSend(ptr);
 					switch (result)
 					{
 					case ERROR_DISCONNECTED:
@@ -1133,31 +1130,31 @@ void MainManager::Run()
 						ptr->SetState('n', DISCONNECTED_STATE);
 						break;
 					case SOC_FALSE:
-						LeaveCriticalSection(&cs);
+	 
 						continue;
 					case SOC_TRUE:
 						break;
 					}
 					if (ptr->is_disconnected())
 					{
-						LeaveCriticalSection(&cs);
+	 
 						break;
 					}
-					Agm_pts->GetInstance()->ExitAuctionGroup(ptr);
+					_AuctionGroupManager::GetInstance()->ExitAuctionGroup(ptr);
 					ptr->SetState('n', LOGIN_MENU_SELECT_STATE);
-					LeaveCriticalSection(&cs);
+ 
 					break;
 				}//switch protocol end
 
 				if (ptr->GetState('n') == DISCONNECTED_STATE)
 				{
-					Cm_pts->GetInstance()->RemoveClient(ptr);
+					_ClientManager::GetInstance()->RemoveClient(ptr);
 					continue;
 				}
 			}//if wset end
 		}// client service while end
 
-		Cm_pts->GetInstance()->GetUserList()->SearchEnd();
+		_ClientManager::GetInstance()->GetUserList()->SearchEnd();
 	}//accept while end
 
 	closesocket(hServSock);

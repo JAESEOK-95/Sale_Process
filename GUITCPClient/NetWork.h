@@ -198,6 +198,55 @@ void PackPacket(char* _buf, PROTOCOL _protocol, char* _str1, char* _str2, char* 
 	_size = _size + sizeof(_size);
 }
 
+void PackPacket(char* _buf, PROTOCOL _protocol, char* _str1, char* _str2, char* _str3, int _data, int& _size)
+{
+	char* ptr = _buf;
+	int strsize1 = strlen(_str1);
+	int strsize2 = strlen(_str2);
+	int strsize3 = strlen(_str3);
+
+	_size = 0;
+
+	ptr = ptr + sizeof(_size);
+
+	memcpy(ptr, &_protocol, sizeof(_protocol));
+	ptr = ptr + sizeof(_protocol);
+	_size = _size + sizeof(_protocol);
+
+	memcpy(ptr, &strsize1, sizeof(strsize1));
+	ptr = ptr + sizeof(strsize1);
+	_size = _size + sizeof(strsize1);
+
+	memcpy(ptr, _str1, strsize1);
+	ptr = ptr + strsize1;
+	_size = _size + strsize1;
+
+	memcpy(ptr, &strsize2, sizeof(strsize2));
+	ptr = ptr + sizeof(strsize2);
+	_size = _size + sizeof(strsize2);
+
+	memcpy(ptr, _str2, strsize2);
+	ptr = ptr + strsize2;
+	_size = _size + strsize2;
+
+	memcpy(ptr, &strsize3, sizeof(strsize3));
+	ptr = ptr + sizeof(strsize3);
+	_size = _size + sizeof(strsize3);
+
+	memcpy(ptr, _str3, strsize3);
+	ptr = ptr + strsize3;
+	_size = _size + strsize3;
+
+	memcpy(ptr, &_data, sizeof(int));
+	ptr = ptr + sizeof(int);
+	_size = _size + sizeof(int);
+
+	ptr = _buf;
+	memcpy(ptr, &_size, sizeof(_size));
+
+	_size = _size + sizeof(_size);
+}
+
 void PackPacket(char* _buf, PROTOCOL _protocol, char* _str1, char* _str2, int& _size)
 {
 	char* ptr = _buf;

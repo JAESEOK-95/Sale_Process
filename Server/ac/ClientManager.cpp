@@ -83,7 +83,7 @@ _ClientManager::~_ClientManager()
 
 void _ClientManager::RemoveClient(_ClientInfo* _ptr)
 {
-	EnterCriticalSection(&cs);
+	 
 	closesocket(_ptr->GetSock());
 
 	printf("\nClient 종료: IP 주소=%s, 포트 번호=%d\n", inet_ntoa(_ptr->GetAddr().sin_addr), ntohs(_ptr->GetAddr().sin_port));
@@ -95,7 +95,7 @@ void _ClientManager::RemoveClient(_ClientInfo* _ptr)
 
 _ClientInfo* _ClientManager::AddClient(SOCKET _sock, SOCKADDR_IN _clientaddr)
 {
-	EnterCriticalSection(&cs);
+	 
 	_ClientInfo* ptr = new _ClientInfo(_sock, _clientaddr);
 	User_List->Insert(ptr);
 	LeaveCriticalSection(&cs);
@@ -191,6 +191,7 @@ int _ClientManager::MessageSend(_ClientInfo* _info)
 
 int _ClientManager::PacketRecv(_ClientInfo* _ptr)
 {
+	int Tempbytes = 0;
 	if (!_ptr->GetReSizeflag())
 	{
 		//_ptr->recvbytes = sizeof(int);
@@ -199,8 +200,8 @@ int _ClientManager::PacketRecv(_ClientInfo* _ptr)
 		switch (retval)
 		{
 		case SOC_TRUE:
-			memcpy((void*)_ptr->Getbytes('r'), _ptr->Getbuf('r'), sizeof(int));  //test 필요
-			//_ptr->r_sizeflag = true;
+			memcpy(&Tempbytes, _ptr->Getbuf('r'), sizeof(int));  //test 필요
+			_ptr->Setbytes('r', Tempbytes);
 			_ptr->SetReSizeflag(true);
 			return SOC_FALSE;
 		case SOC_FALSE:

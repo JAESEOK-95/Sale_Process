@@ -9,9 +9,6 @@ class MainManager
 {
 private:
 	static MainManager* Mm_pts;
-	static _ClientManager* Cm_pts;
-	static _AuctionManager* Am_pts;
-	static _AuctionGroupManager* Agm_pts;
 	MainManager();
 	~MainManager();
 

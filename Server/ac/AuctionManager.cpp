@@ -58,18 +58,16 @@ void _AuctionManager::Destroy()
 
 _AuctionInfo* _AuctionManager::AddAuctionInfo(const char* _product, int _count, int _price)
 {
-	EnterCriticalSection(&cs);
 	//Now_Product_Code += _count;
 	//_AuctionInfo* info = new _AuctionInfo(Now_Product_Code,_product, _count, _price);
 	_AuctionInfo* info = new _AuctionInfo(_product, _count, _price);
 	Auction_List->Insert(info);
-	LeaveCriticalSection(&cs);
 	return info;
 }
 
 void _AuctionManager::RemoveAuctionInfo(_AuctionInfo* _auctioninfo)
 {
-	EnterCriticalSection(&cs);
+	 
 	Auction_List->Delete(_auctioninfo);
 	delete _auctioninfo;
 	LeaveCriticalSection(&cs);

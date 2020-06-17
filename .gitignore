@@ -5,3 +5,6 @@
 *.db-wal
 *.ipch
 /Server/ac/Debug
+*.res
+GUITCPClient/Debug/
+Server/enc_temp_folder/

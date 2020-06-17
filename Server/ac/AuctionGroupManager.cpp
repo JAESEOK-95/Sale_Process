@@ -74,7 +74,7 @@ _AuctionGroupInfo* _AuctionGroupManager::SearchAuctionGroupInfo(_AuctionInfo* _a
 
 _AuctionGroupInfo* _AuctionGroupManager::AddAuctionGroupInfo(_AuctionInfo* _info)
 {	
-	EnterCriticalSection(&cs);
+	 
 	_AuctionGroupInfo* group_info=nullptr;
 	
 	bool flag = false;
@@ -116,7 +116,7 @@ _AuctionGroupInfo* _AuctionGroupManager::AddAuctionGroupInfo(_AuctionInfo* _info
 
 void _AuctionGroupManager::RemoveAuctionGroupInfo(_AuctionGroupInfo* _group_info)
 {
-	EnterCriticalSection(&cs);
+	 
 	_AuctionGroupInfo* group_info = nullptr;
 	Auction_Group_List->SearchStart();
 
