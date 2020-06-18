@@ -26,7 +26,10 @@
 #define AUCTION_MONEY_ERROR_MSG "보유 금액이 부족합니다.\n"
 #define AUCTION_BID_MONEY_ERROR_MSG "최근 베팅 가격보다 낮은 금액을 베팅하셨습니다.\n"
 #define USER_EXIT_INFO_MSG "최고가격을 배팅했던 유저가 포기했습니다. 이전가격부터 시작합니다.\n"
-
+#define SEND 's'
+#define RECV 'r'
+#define PRE 'p'
+#define NOMAL 'n'
 static void err_quit(char* msg);
 
 static void err_display(char* msg);

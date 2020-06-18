@@ -13,7 +13,7 @@ private:
 	~_ClientManager();						//delete
 
 	CLinkedList<_ClientInfo*>* User_List;
-	CLinkedList<_User_Info*>* Join_List;
+
 
 public:
 

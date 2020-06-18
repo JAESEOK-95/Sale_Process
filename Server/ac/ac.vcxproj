@@ -105,6 +105,7 @@
     <ClInclude Include="ClientManager.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="LoginManager.h" />
     <ClInclude Include="MainManager.h" />
     <ClInclude Include="Stack.h" />
   </ItemGroup>
